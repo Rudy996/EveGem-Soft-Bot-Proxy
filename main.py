@@ -28,7 +28,7 @@ def work(line, proxy):
 
 
     while True:
-        visitor, request1, cookie = line.strip().split(':')
+        visitor, request1, idi, cookie = line.strip().split(':')
         sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
         proxy_url = f"http://{proxy}"
@@ -77,7 +77,7 @@ def work(line, proxy):
                 'h-captcha-response': gh,
                 'visitorId': f'{visitor}',
                 'requestId': f'{request1}',
-                'item_id': '28072'
+                'item_id': f'{idi}'
             }
 
             headers = {
