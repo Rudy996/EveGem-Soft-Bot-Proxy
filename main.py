@@ -3,8 +3,9 @@ import os
 import random
 import threading
 import time
-
 import requests
+
+from twocaptcha import TwoCaptcha
 
 with open('proxy.txt', 'r') as proxy_file:
     proxies_list = proxy_file.readlines()
@@ -45,8 +46,6 @@ def work(line, proxy):
             time.sleep(99999999999)
             
 
-
-        from twocaptcha import TwoCaptcha
 
         api_key = os.getenv('APIKEY_2CAPTCHA', 'api')
 
