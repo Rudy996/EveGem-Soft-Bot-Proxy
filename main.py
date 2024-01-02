@@ -22,98 +22,101 @@ user_agents = [
     "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:55.0) Gecko/20100101 Firefox/55.0"
 ]
 
-def work(line, proxy):
-    s = 1
 
+def work(line, proxy, s):
 
+    idi, cookie = line.strip().split(':')
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
-    while True:
-        idi, cookie = line.strip().split(':')
-        sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+    proxy_url = f"http://{proxy}"
+    proxies = {
+        "http": proxy_url,
+        "https": proxy_url
+    }
 
-        proxy_url = f"http://{proxy}"
-        proxies = {
-            "http": proxy_url,
-            "https": proxy_url
+    response = requests.get("http://httpbin.org/ip", proxies=proxies, timeout=5)
+    if response.status_code == 200:
+        pass
+    else:
+        print(f"Прокси {proxy} не работает. Статус: {response.status_code}. Поток засыпает до конца работы")
+        time.sleep(99999999999)
+
+    from twocaptcha import TwoCaptcha
+
+    api_key = os.getenv('APIKEY_2CAPTCHA', 'api')
+
+    solver = TwoCaptcha(api_key)
+
+    try:
+        result = solver.hcaptcha(
+            sitekey='d1add268-b915-46c1-afd3-960faba20822',
+            url='https://evergem.io/claim?redirect_to=/game',
+        )
+
+    except Exception as e:
+        sys.exit(e)
+
+    else:
+        gh = result.get('code')
+        gh = gh.replace(" ", "")
+        # print(gh)
+        random_user_agent = random.choice(user_agents)
+
+        params = {
+            'redirect_to': '/game'
         }
 
-        response = requests.get("http://httpbin.org/ip", proxies=proxies, timeout=5)
+        url = 'https://evergem.io/claim?redirect_to=/game'
+        payload = {
+            # 'g-recaptcha-response': gh,
+            'item_id': f'{idi}',
+            'h-captcha-response': gh
+            # 'visitorId': f'{visitor}',
+            # 'requestId': f'{request1}',
+
+        }
+
+        headers = {
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'uk,ru-RU;q=0.9,ru;q=0.8,en-US;q=0.7,en;q=0.6,bg;q=0.5,es;q=0.4',
+            'Cache-Control': 'max-age=0',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Cookie': f'{cookie}',
+            'Origin': 'null',
+            'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+            'Sec-Ch-Ua-Mobile': '?0',
+            'Sec-Ch-Ua-Platform': '"Windows"',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'same-origin',
+            'Sec-Fetch-User': '?1',
+            'Upgrade-Insecure-Requests': '1',
+            'User-Agent': f'{random_user_agent}'
+        }
+
+        response = requests.post(url, headers=headers, params=params, data=payload, proxies=proxies)
+        pot = threading.current_thread().name
+
         if response.status_code == 200:
-            pass
+            print(f"Поток: {pot}: Заклеймлино наград: {s}  | Автор Rudy Crypto - https://t.me/rudtyt")
         else:
-            print(f"Прокси {proxy} не работает. Статус: {response.status_code}. Поток засыпает до конца работы")
-            time.sleep(99999999999)
-            
+            print("Хуй знает, но почему-то не заклеймилось")
 
+        time.sleep(300)
 
-        from twocaptcha import TwoCaptcha
+s = 1
+while True:
 
-        api_key = os.getenv('APIKEY_2CAPTCHA', 'api')
+    threads = []
+    with open('info.txt', 'r') as file:
+        for idx, line in enumerate(file):
+            proxy = proxies_list[idx % len(proxies_list)].strip()
+            thread = threading.Thread(target=work, args=(line, proxy, s))
+            threads.append(thread)
+            thread.start()
 
-        solver = TwoCaptcha(api_key)
+    for thread in threads:
+        thread.join()
+        s = s + 1
 
-        try:
-            result = solver.hcaptcha(
-                sitekey='d1add268-b915-46c1-afd3-960faba20822',
-                url='https://evergem.io/claim?redirect_to=/game',
-            )
-
-        except Exception as e:
-            sys.exit(e)
-
-        else:
-            gh = result.get('code')
-            gh = gh.replace(" ", "")
-            # print(gh)
-            random_user_agent = random.choice(user_agents)
-
-            params = {
-                'redirect_to': '/game'
-            }
-
-            url = 'https://evergem.io/claim?redirect_to=/game'
-            payload = {
-                'item_id': f'{idi}',
-                'h-captcha-response': gh
-            }
-
-            headers = {
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Accept-Language': 'uk,ru-RU;q=0.9,ru;q=0.8,en-US;q=0.7,en;q=0.6,bg;q=0.5,es;q=0.4',
-                'Cache-Control': 'max-age=0',
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Cookie': f'{cookie}',
-                'Origin': 'null',
-                'Sec-Ch-Ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
-                'Sec-Ch-Ua-Mobile': '?0',
-                'Sec-Ch-Ua-Platform': '"Windows"',
-                'Sec-Fetch-Dest': 'document',
-                'Sec-Fetch-Mode': 'navigate',
-                'Sec-Fetch-Site': 'same-origin',
-                'Sec-Fetch-User': '?1',
-                'Upgrade-Insecure-Requests': '1',
-                'User-Agent': f'{random_user_agent}'
-            }
-
-            response = requests.post(url,headers=headers, params=params, data=payload, proxies=proxies)
-            pot = threading.current_thread().name
-
-            if response.status_code == 200:
-                print(f"Поток: {pot}: Заклеймлино наград: {s}  | Автор Rudy Crypto - https://t.me/rudtyt")
-            else:
-                print("Хуй знает, но почему-то не заклеймилось")
-
-            s = s + 1
-            time.sleep(300)
-
-threads = []
-with open('info.txt', 'r') as file:
-    for idx, line in enumerate(file):
-        proxy = proxies_list[idx % len(proxies_list)].strip()  # Циклическое использование прокси
-        thread = threading.Thread(target=work, args=(line, proxy))
-        threads.append(thread)
-        thread.start()
-
-for thread in threads:
-    thread.join()
