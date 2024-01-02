@@ -25,7 +25,7 @@ user_agents = [
 
 def work(line, proxy, s):
 
-    idi, cookie = line.strip().split(':')
+    idi, castl, cookie = line.strip().split(':')
     sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
     proxy_url = f"http://{proxy}"
@@ -70,8 +70,8 @@ def work(line, proxy, s):
         payload = {
             # 'g-recaptcha-response': gh,
             'item_id': f'{idi}',
-            'h-captcha-response': gh
-            # 'visitorId': f'{visitor}',
+            'h-captcha-response': gh,
+            'castle_request_token': castl
             # 'requestId': f'{request1}',
 
         }
