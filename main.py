@@ -28,7 +28,7 @@ def work(line, proxy):
 
 
     while True:
-        visitor, request1, idi, cookie = line.strip().split(':')
+        idi, cookie = line.strip().split(':')
         sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
         proxy_url = f"http://{proxy}"
