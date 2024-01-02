@@ -1,1 +1,1 @@
-visitorID:requestID:item_id:cookie
+item_id:cookie
